@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { Terminal, Activity, BrainCircuit, BarChart2, List, Settings, TrendingUp } from 'lucide-react';
 
@@ -16,6 +16,35 @@ const mockOrderBook = {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
+
+  // --- THE BRIDGE: Backend Connection State ---
+  const [isEngineLive, setIsEngineLive] = useState(false);
+
+  useEffect(() => {
+    // Function to ping your free Render Web Service
+    const checkEngineStatus = async () => {
+      try {
+        const response = await fetch('https://nexus-ai-trading-agent.onrender.com/');
+        // If the bot responds with a 200 OK status, it's alive
+        if (response.ok) {
+          setIsEngineLive(true);
+        } else {
+          setIsEngineLive(false);
+        }
+      } catch (error) {
+        // If the fetch fails (e.g., Render is asleep or building), show offline
+        setIsEngineLive(false);
+      }
+    };
+
+    // Ping immediately on load
+    checkEngineStatus();
+
+    // Continue pinging every 10 seconds to maintain live status
+    const interval = setInterval(checkEngineStatus, 10000);
+    return () => clearInterval(interval);
+  }, []);
+  // --------------------------------------------
 
   return (
     <div style={{ backgroundColor: '#0f172a', color: '#e2e8f0', height: '100vh', display: 'flex', fontFamily: 'monospace', overflow: 'hidden' }}>
@@ -44,9 +73,21 @@ export default function App() {
               <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>NET PNL</p>
               <p style={{ margin: 0, fontSize: '18px', color: '#4ade80', fontWeight: 'bold' }}>+$1,240.50</p>
             </div>
-            <span style={{ backgroundColor: 'rgba(22, 101, 52, 0.3)', color: '#4ade80', border: '1px solid #166534', padding: '6px 12px', borderRadius: '4px', fontSize: '13px', fontWeight: 'bold' }}>
-              ● ENGINE LIVE
+
+            {/* DYNAMIC ENGINE STATUS INDICATOR */}
+            <span style={{
+              backgroundColor: isEngineLive ? 'rgba(22, 101, 52, 0.3)' : 'rgba(153, 27, 27, 0.3)',
+              color: isEngineLive ? '#4ade80' : '#ef4444',
+              border: `1px solid ${isEngineLive ? '#166534' : '#991b1b'}`,
+              padding: '6px 12px',
+              borderRadius: '4px',
+              fontSize: '13px',
+              fontWeight: 'bold',
+              transition: 'all 0.3s ease'
+            }}>
+              {isEngineLive ? '● ENGINE LIVE' : '○ ENGINE OFFLINE'}
             </span>
+
           </div>
         </header>
 
@@ -119,6 +160,7 @@ export default function App() {
             </div>
 
             <div style={{ fontSize: '12px', lineHeight: '1.7', color: '#cbd5e1' }}>
+              <p><span style={{ color: '#64748b' }}>[{new Date().toLocaleTimeString()}]</span> <span style={{ color: '#eab308' }}>[SYSTEM]</span> Connection established with Render backend.</p>
               <p><span style={{ color: '#64748b' }}>[12:31:04]</span> <span style={{ color: '#eab308' }}>[SCAN]</span> Ingesting market data for 50 tickers...</p>
               <p><span style={{ color: '#64748b' }}>[12:31:05]</span> <span style={{ color: '#38bdf8' }}>[ANALYSIS]</span> Groq Llama-3 parsing sentiment from recent news events.</p>
               <p><span style={{ color: '#64748b' }}>[12:31:06]</span> <span style={{ color: '#4ade80' }}>[SIGNAL]</span> Strong Bullish divergence detected on AAPL (Confidence: 87%).</p>
