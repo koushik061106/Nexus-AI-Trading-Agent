@@ -34,3 +34,4 @@ scikit-learn>=1.0.0
 xgboost>=1.7.0
 fastapi
 uvicorn
+flask

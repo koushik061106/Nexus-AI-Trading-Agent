@@ -1,23 +1,17 @@
-CONSUMER_KEY  = ""        # App → More → Trade API → Create Application
-MOBILE_NUMBER = ""        # +91XXXXXXXXXX with country code
-UCC           = ""        # Client code from App → Profile
-MPIN          = ""        # 6-digit MPIN set on Neo platform
+# Rename this file to config.py if you are setting up locally,
+# but for production, use the environment variables in your dashboard.
 
-# ── GROQ AI (Primary — Free 6000 calls/day) ────────────────
-GROQ_API_KEY  = ""        # From console.groq.com → API Keys
-GROQ_MODEL    = ""
+CONSUMER_KEY  = "" # Required
+MOBILE_NUMBER = "" # Required
+UCC           = "" # Required
+MPIN          = "" # Required
 
-# ── OPENROUTER (Fallback only) ─────────────────────────────
-OPENROUTER_API_KEY = ""   # From openrouter.ai → Keys
-OPENROUTER_MODEL   = ""   # Auto-fetched from live free model list
+GROQ_API_KEY       = "" # Required
+OPENROUTER_API_KEY = "" # Required
+NEWSAPI_KEY        = "" 
 
-# ── NEWS ────────────────────────────────────────────────────
-NEWSAPI_KEY   = ""        # From newsapi.org — free tier
-
-# ── TELEGRAM ALERTS (Optional) ─────────────────────────────
-TELEGRAM_TOKEN   =""     # From @BotFather on Telegram
-TELEGRAM_CHAT_ID = ""     # From @userinfobot on Telegram
-TELEGRAM_ENABLED = False  # Set True when configured
+TELEGRAM_TOKEN   = "" 
+TELEGRAM_CHAT_ID = ""
 
 # ── CAPITAL ─────────────────────────────────────────────────
 TRADING_CAPITAL       = 500      # Bot reads LIVE balance from Kotak
