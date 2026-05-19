@@ -1,3 +1,9 @@
+.venv/
+venv/
+env/
+nexus_v3/.venv/
+node_modules/
+.env
 # Logs
 logs
 *.log
