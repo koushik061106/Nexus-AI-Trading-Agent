@@ -1,24 +1,23 @@
-# ── KOTAK NEO ──────────────────────────────────────────────
-CONSUMER_KEY  = "c050533b-4204-4cfa-b0e0-71b4675a646c"        # App → More → Trade API → Create Application
-MOBILE_NUMBER = "6301593052"        # +91XXXXXXXXXX with country code
-UCC           = "W63SG"        # Client code from App → Profile
-MPIN          = "000000"        # 6-digit MPIN set on Neo platform
+import os
 
-# ── GROQ AI (Primary — Free 6000 calls/day) ────────────────
-GROQ_API_KEY  = "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"        # From console.groq.com → API Keys
-GROQ_MODEL    = "llama-3.3-70b-versatile"
+# ── API KEYS (Do NOT hardcode anything here) ──────────────
+CONSUMER_KEY  = os.getenv("CONSUMER_KEY")
+MOBILE_NUMBER = os.getenv("MOBILE_NUMBER")
+UCC           = os.getenv("UCC")
+MPIN          = os.getenv("MPIN")
 
-# ── OPENROUTER (Fallback only) ─────────────────────────────
-OPENROUTER_API_KEY = "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"   # From openrouter.ai → Keys
-OPENROUTER_MODEL   = ""   # Auto-fetched from live free model list
+# ── AI MODELS ─────────────────────────────────────────────
+GROQ_API_KEY  = os.getenv("GROQ_API_KEY")
+GROQ_MODEL    = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
-# ── NEWS ────────────────────────────────────────────────────
-NEWSAPI_KEY   = "pub_ba0ad0d3671e48059a4df2c0e981f3a2"        # From newsapi.org — free tier
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_MODEL   = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-8b-instruct")
 
-# ── TELEGRAM ALERTS (Optional) ─────────────────────────────
-TELEGRAM_TOKEN   ="8512845944:AAGy5ihE107pPnx_bqAKBgpZFRIZHScB2IE"     # From @BotFather on Telegram
-TELEGRAM_CHAT_ID = "7940314762"     # From @userinfobot on Telegram
-TELEGRAM_ENABLED = True  # Set True when configured
+# ── NEWS & ALERTS ────────────────────────────────────────
+NEWSAPI_KEY      = os.getenv("NEWSAPI_KEY")
+TELEGRAM_TOKEN   = os.getenv("TELEGRAM_TOKEN")
+TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+TELEGRAM_ENABLED = os.getenv("TELEGRAM_ENABLED", "true").lower() == "true"
 
 # ── CAPITAL ─────────────────────────────────────────────────
 TRADING_CAPITAL       = 500      # Bot reads LIVE balance from Kotak
