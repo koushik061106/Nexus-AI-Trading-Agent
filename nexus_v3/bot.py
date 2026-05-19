@@ -3,13 +3,16 @@ import os
 import json
 import time
 import logging
+from flask_cors import CORS
 from pathlib import Path
 from datetime import datetime
 from threading import Thread
+# pyrefly: ignore [missing-import]
 from flask import Flask
 
 # ─── FREE TIER WEB SERVER (KEEPS RENDER HAPPY) ───────────────
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def home():
