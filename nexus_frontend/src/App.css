@@ -1,0 +1,70 @@
+/* --- NEW CSS FOR TRADE LOG & WALLET --- */
+
+.header-actions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.wallet-btn {
+  background-color: transparent;
+  color: #58a6ff;
+  border: 1px solid #58a6ff;
+  padding: 5px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.wallet-btn:hover {
+  background-color: #58a6ff;
+  color: #0d1117;
+}
+
+.log-section {
+  margin-top: 40px;
+}
+
+.log-section h2 {
+  color: #8b949e;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #30363d;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.trade-log-container {
+  background-color: #161b22;
+  border: 1px solid #30363d;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.trade-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  padding: 12px 20px;
+  border-bottom: 1px solid #21262d;
+  font-family: 'Courier New', Courier, monospace; /* Terminal font! */
+  font-size: 0.95rem;
+}
+
+.trade-row:last-child {
+  border-bottom: none;
+}
+
+.header-row {
+  background-color: #21262d;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: bold;
+  color: #8b949e;
+}
+
+.trade-pair {
+  color: #c9d1d9;
+  font-weight: bold;
+}
+
+.trade-status.executed { color: #7ee787; }
+.trade-status.pending { color: #d2a8ff; }

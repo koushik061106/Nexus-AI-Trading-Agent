@@ -1,0 +1,34 @@
+# Core broker — MUST install from GitHub not PyPI
+#pip install git+https://github.com/Kotak-Neo/Kotak-neo-api-v2.git
+
+# AI and HTTP
+requests>=2.25.1
+groq
+
+# Data and analysis
+pandas>=2.0.0
+numpy>=1.24.0
+ta>=0.11.0
+yfinance>=0.2.0
+mplfinance
+
+# News
+feedparser>=6.0.0
+newsapi-python>=0.2.7
+
+# Scheduling and utils
+schedule>=1.2.0
+pyotp>=2.9.0
+python-dateutil>=2.8.0
+
+# Display
+rich>=14.0.0
+colorlog>=6.0.0
+
+# Alerts
+python-telegram-bot>=20.0
+pyttsx3>=2.90
+
+# ML (for future upgrades)
+scikit-learn>=1.0.0
+xgboost>=1.7.0
