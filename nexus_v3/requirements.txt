@@ -35,3 +35,4 @@ xgboost>=1.7.0
 fastapi
 uvicorn
 flask
+neo-api-client
