@@ -26,7 +26,13 @@ export default function App() {
   
   // --- THE BRIDGE: Backend Connection State ---
   const [isEngineLive, setIsEngineLive] = useState(false);
-  const [netPnl, setNetPnl] = useState(1240.50);
+  const [netPnl, setNetPnl] = useState(0.00);
+  
+  // NEW: State array to hold the live AI logs
+  const [systemLogs, setSystemLogs] = useState([
+    { time: new Date().toLocaleTimeString(), text: "[SYSTEM] Nexus Quantitative Terminal booting...", type: "system" },
+    { time: new Date().toLocaleTimeString(), text: "[AUTH] Connection to Render backend established.", type: "success" }
+  ]);
 
   useEffect(() => {
     const fetchLiveData = async () => {
@@ -36,6 +42,23 @@ export default function App() {
           const data = await response.json();
           setIsEngineLive(true);
           setNetPnl(data.net_pnl);
+          
+          // NEW: Push the live AI thought into the terminal
+          if (data.latest_log) {
+            setSystemLogs(prevLogs => {
+              // Prevent duplicate consecutive logs
+              if (prevLogs.length > 0 && prevLogs[prevLogs.length - 1].text === data.latest_log) {
+                return prevLogs;
+              }
+              const newLog = { 
+                time: new Date().toLocaleTimeString(), 
+                text: data.latest_log, 
+                type: "ai" 
+              };
+              // Keep only the last 20 logs so the terminal doesn't overflow memory
+              return [...prevLogs, newLog].slice(-20);
+            });
+          }
         } else {
           setIsEngineLive(false);
         }
@@ -45,10 +68,18 @@ export default function App() {
     };
 
     fetchLiveData();
-    const interval = setInterval(fetchLiveData, 10000);
+    const interval = setInterval(fetchLiveData, 10000); // Pings Groq every 10 seconds
     return () => clearInterval(interval);
   }, []);
   // --------------------------------------------
+
+  // Helper function to color code logs based on their type
+  const getLogColor = (type) => {
+    if (type === 'system') return '#eab308'; // Yellow
+    if (type === 'success') return '#4ade80'; // Green
+    if (type === 'ai') return '#38bdf8'; // Blue
+    return '#cbd5e1'; // Default slate
+  };
 
   // --- VIEWS ---
   const renderDashboard = () => (
@@ -61,7 +92,7 @@ export default function App() {
               <TrendingUp size={18} color="#38bdf8" />
               <h2 style={{ margin: 0, fontSize: '14px', color: '#f8fafc' }}>NIFTY 50 / INR</h2>
             </div>
-            <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#f8fafc' }}>$₹2,950.00</span>
+            <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#f8fafc' }}>₹24,500.00</span>
           </div>
           <ResponsiveContainer width="100%" height="85%">
             <AreaChart data={mockChartData}>
@@ -105,19 +136,21 @@ export default function App() {
         </div>
       </div>
 
-      {/* COLUMN 3: AI AGENT TELEMETRY */}
-      <div style={{ backgroundColor: '#000000', border: '1px solid #334155', borderRadius: '8px', padding: '15px', overflowY: 'auto' }}>
+      {/* COLUMN 3: LIVE AI AGENT TELEMETRY */}
+      <div style={{ backgroundColor: '#000000', border: '1px solid #334155', borderRadius: '8px', padding: '15px', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '1px solid #334155', paddingBottom: '10px', marginBottom: '15px' }}>
           <Terminal color="#a855f7" size={16} />
-          <h2 style={{ margin: 0, fontSize: '14px', color: '#a855f7' }}>AGENT TELEMETRY LOG</h2>
+          <h2 style={{ margin: 0, fontSize: '14px', color: '#a855f7' }}>LIVE AI TELEMETRY</h2>
         </div>
-        <div style={{ fontSize: '12px', lineHeight: '1.7', color: '#cbd5e1' }}>
-          <p><span style={{ color: '#64748b' }}>[{new Date().toLocaleTimeString()}]</span> <span style={{ color: '#eab308' }}>[SYSTEM]</span> Connection established with Render backend.</p>
-          <p><span style={{ color: '#64748b' }}>[12:31:04]</span> <span style={{ color: '#eab308' }}>[SCAN]</span> Ingesting market data for 50 tickers...</p>
-          <p><span style={{ color: '#64748b' }}>[12:31:05]</span> <span style={{ color: '#38bdf8' }}>[ANALYSIS]</span> Groq Llama-3 parsing sentiment from recent news events.</p>
-          <p><span style={{ color: '#64748b' }}>[12:31:06]</span> <span style={{ color: '#4ade80' }}>[SIGNAL]</span> Strong Bullish divergence detected on AAPL (Confidence: 87%).</p>
-          <p><span style={{ color: '#64748b' }}>[12:31:07]</span> <span style={{ color: '#a855f7' }}>[EXECUTION]</span> Routing BUY order to broker. Size: 150 shares.</p>
-          <p><span style={{ color: '#64748b' }}>[12:31:08]</span> <span style={{ color: '#4ade80' }}>[SUCCESS]</span> Order filled at $155.00.</p>
+        <div style={{ fontSize: '12px', lineHeight: '1.7', color: '#cbd5e1', flex: 1 }}>
+          {/* Dynamically map over our real logs from the backend! */}
+          {systemLogs.map((log, index) => (
+            <p key={index}>
+              <span style={{ color: '#64748b' }}>[{log.time}]</span>{' '}
+              <span style={{ color: getLogColor(log.type) }}>{log.text}</span>
+            </p>
+          ))}
+          <div className="animate-pulse mt-4 text-slate-500">_ waiting for next signal...</div>
         </div>
       </div>
     </div>
@@ -165,13 +198,14 @@ export default function App() {
         <h2 style={{ margin: 0, color: '#a855f7', fontSize: '18px' }}>FULL SYSTEM DIAGNOSTICS</h2>
       </div>
       <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#cbd5e1', fontFamily: 'monospace' }}>
-        <p><span style={{ color: '#64748b' }}>[08:00:00]</span> <span style={{ color: '#38bdf8' }}>[INIT]</span> Nexus Quantitative Terminal booting...</p>
-        <p><span style={{ color: '#64748b' }}>[08:00:02]</span> <span style={{ color: '#4ade80' }}>[AUTH]</span> Connection to Kotak Neo API successful.</p>
-        <p><span style={{ color: '#64748b' }}>[08:00:05]</span> <span style={{ color: '#4ade80' }}>[AUTH]</span> Groq Llama-3 neural engine loaded.</p>
-        <p><span style={{ color: '#64748b' }}>[08:15:00]</span> <span style={{ color: '#eab308' }}>[SCAN]</span> Market open detected. Commencing sector rotation analysis.</p>
-        <p><span style={{ color: '#64748b' }}>[09:30:00]</span> <span style={{ color: '#a855f7' }}>[AI_THOUGHT]</span> Evaluating high volatility in tech sector. Applying momentum strategy.</p>
-        <p><span style={{ color: '#64748b' }}>[12:31:08]</span> <span style={{ color: '#4ade80' }}>[EXECUTION]</span> Buy order AAPL filled. Monitoring trailing stop loss.</p>
-        <div className="animate-pulse mt-4 text-slate-500">_ waiting for next signal...</div>
+        {/* Syncing the big diagnostics screen to our live logs too */}
+        {systemLogs.map((log, index) => (
+            <p key={index}>
+              <span style={{ color: '#64748b' }}>[{log.time}]</span>{' '}
+              <span style={{ color: getLogColor(log.type) }}>{log.text}</span>
+            </p>
+        ))}
+        <div className="animate-pulse mt-4 text-slate-500">_ awaiting neural input...</div>
       </div>
     </div>
   );
@@ -187,8 +221,8 @@ export default function App() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ color: '#94a3b8', fontSize: '12px' }}>API STATUS</label>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: '#0f172a', padding: '10px 15px', borderRadius: '6px', border: '1px solid #334155' }}>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#4ade80' }}></div>
-            <span style={{ color: '#cbd5e1', fontSize: '14px' }}>Connected to Kotak Neo</span>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: isEngineLive ? '#4ade80' : '#ef4444' }}></div>
+            <span style={{ color: '#cbd5e1', fontSize: '14px' }}>{isEngineLive ? 'Connected to Kotak Neo & Groq' : 'Disconnected'}</span>
           </div>
         </div>
 
@@ -241,7 +275,7 @@ export default function App() {
             <div style={{ textAlign: 'right' }}>
               <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>NET PNL</p>
               <p style={{ margin: 0, fontSize: '18px', color: '#4ade80', fontWeight: 'bold' }}>
-              +₹{netPnl.toFixed(2)}
+              ₹{netPnl.toFixed(2)}
               </p>
             </div>
             
@@ -262,6 +296,7 @@ export default function App() {
 
         {/* DYNAMIC CONTENT AREA */}
         <div style={{ flex: 1, overflow: 'hidden' }}>
+          {activeTab === 'dashboard'}
           {activeTab === 'dashboard' && renderDashboard()}
           {activeTab === 'orders' && renderOrders()}
           {activeTab === 'logs' && renderLogs()}
