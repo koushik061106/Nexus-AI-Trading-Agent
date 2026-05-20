@@ -1,19 +1,44 @@
 import sys
 import os
-import json
-import time
-import logging
-from flask_cors import CORS
-from pathlib import Path
-from datetime import datetime
-from threading import Thread
-# pyrefly: ignore [missing-import]
 from flask import Flask, jsonify
 from flask_cors import CORS
+from neo_api_client import NeoAPI
 
-# ─── FREE TIER WEB SERVER (KEEPS RENDER HAPPY) ───────────────
 app = Flask(__name__)
 CORS(app)
+
+# ─── KOTAK NEO AUTHENTICATION ────────────────────────────────
+def get_live_balance():
+    try:
+        # 1. Pull secure credentials from Render (NOT hardcoded!)
+        consumer_key = os.getenv("KOTAK_CONSUMER_KEY")
+        consumer_secret = os.getenv("KOTAK_CONSUMER_SECRET")
+        mobile = os.getenv("KOTAK_MOBILE")
+        password = os.getenv("KOTAK_PASSWORD")
+        mpin = os.getenv("KOTAK_MPIN")
+
+        # If keys aren't set in Render yet, return a safe fallback test number
+        if not consumer_key:
+            return 777.77 # If you see this on the UI, it means Render needs your keys!
+
+        # 2. Initialize Kotak Client
+        client = NeoAPI(consumer_key=consumer_key, consumer_secret=consumer_secret, environment='prod')
+        client.login(mobilenum=mobile, password=password)
+        client.session_2fa(OTP=mpin)
+        
+        # 3. Fetch Account Margin/Balance
+        limits_data = client.margin()
+        
+        # Parse Kotak's response for available cash. 
+        # (If it authenticates successfully but can't read the exact margin format yet, it returns 999.99)
+        available_margin = limits_data.get('Net', {}).get('availableCash', 999.99)
+        
+        return float(available_margin)
+
+    except Exception as e:
+        print(f"Broker Auth Error: {e}")
+        return 0.00 # Returns 0 if login fails so the React UI doesn't crash
+# ─────────────────────────────────────────────────────────────
 
 @app.route('/')
 def home():
@@ -21,12 +46,14 @@ def home():
 
 @app.route('/api/data')
 def get_data():
+    # Call the broker function dynamically every time the UI asks for data
+    real_balance = get_live_balance()
+    
     return jsonify({
         "status": "online",
-        "net_pnl": 1550.75,
-        "latest_log": "Data pipeline established successfully."
-    })
-# ─────────────────────────────────────────────────────────────
+        "net_pnl": real_balance,
+        "latest_log": "Establishing secure handshake with Kotak Neo..."
+    })# ─────────────────────────────────────────────────────────────
 def run_web():
     port = int(os.environ.get("PORT", 10000))
     # This opens the port Render is looking for
