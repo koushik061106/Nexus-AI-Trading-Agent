@@ -8,8 +8,26 @@ from pathlib import Path
 from datetime import datetime
 from threading import Thread
 # pyrefly: ignore [missing-import]
-from flask import Flask
+# ─── FREE TIER WEB SERVER (KEEPS RENDER HAPPY) ───────────────
+from flask import Flask, jsonify
+from flask_cors import CORS
 
+app = Flask(__name__)
+CORS(app) # <--- This fixes the block!
+
+@app.route('/')
+def home():
+    return "Nexus AI Bot is Live and Running!"
+
+@app.route('/api/data')
+def get_data():
+    # We will hook this up to broker.live_balance shortly!
+    return jsonify({
+        "status": "online",
+        "net_pnl": 1550.75,
+        "latest_log": "Data pipeline established successfully."
+    })
+# ─────────────────────────────────────────────────────────────
 # ─── FREE TIER WEB SERVER (KEEPS RENDER HAPPY) ───────────────
 app = Flask(__name__)
 CORS(app)
