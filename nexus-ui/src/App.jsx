@@ -59,9 +59,9 @@ export default function App() {
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8' }}>
               <TrendingUp size={18} color="#38bdf8" />
-              <h2 style={{ margin: 0, fontSize: '14px', color: '#f8fafc' }}>AAPL / USD</h2>
+              <h2 style={{ margin: 0, fontSize: '14px', color: '#f8fafc' }}>NIFTY 50 / INR</h2>
             </div>
-            <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#f8fafc' }}>$155.00</span>
+            <span style={{ fontSize: '18px', fontWeight: 'bold', color: '#f8fafc' }}>$₹2,950.00</span>
           </div>
           <ResponsiveContainer width="100%" height="85%">
             <AreaChart data={mockChartData}>
@@ -149,7 +149,7 @@ export default function App() {
               <td style={{ fontWeight: 'bold' }}>{order.pair}</td>
               <td style={{ color: order.type === 'BUY' ? '#4ade80' : '#ef4444', fontWeight: 'bold' }}>{order.type}</td>
               <td>{order.size}</td>
-              <td>${order.price.toFixed(2)}</td>
+              <td>₹{order.price.toFixed(2)}</td>
               <td><span style={{ backgroundColor: 'rgba(74, 222, 128, 0.2)', color: '#4ade80', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>{order.status}</span></td>
             </tr>
           ))}
@@ -197,7 +197,7 @@ export default function App() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
             <div style={{ backgroundColor: '#0f172a', padding: '15px', borderRadius: '6px', border: '1px solid #334155' }}>
               <p style={{ margin: '0 0 5px 0', color: '#64748b', fontSize: '12px' }}>Max Position Size</p>
-              <p style={{ margin: 0, color: '#f8fafc', fontSize: '16px' }}>$500.00</p>
+              <p style={{ margin: 0, color: '#f8fafc', fontSize: '16px' }}>₹50,000</p>
             </div>
             <div style={{ backgroundColor: '#0f172a', padding: '15px', borderRadius: '6px', border: '1px solid #334155' }}>
               <p style={{ margin: '0 0 5px 0', color: '#64748b', fontSize: '12px' }}>Daily Stop Loss</p>
@@ -241,7 +241,7 @@ export default function App() {
             <div style={{ textAlign: 'right' }}>
               <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>NET PNL</p>
               <p style={{ margin: 0, fontSize: '18px', color: '#4ade80', fontWeight: 'bold' }}>
-                +${netPnl.toFixed(2)}
+              +₹{netPnl.toFixed(2)}
               </p>
             </div>
             
