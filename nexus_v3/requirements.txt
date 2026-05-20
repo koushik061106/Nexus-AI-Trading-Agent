@@ -38,3 +38,8 @@ flask
 git+https://github.com/Kotak-Neo/Kotak-neo-api-v2.git
 flask-cors
 pyotp
+Flask==3.0.0
+flask-cors==4.0.0
+neo-api-client
+pyotp
+groq
