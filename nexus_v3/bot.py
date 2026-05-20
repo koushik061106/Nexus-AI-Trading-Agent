@@ -54,7 +54,7 @@ def get_ai_analysis():
                     "content": "You are Nexus, a quantitative trading AI. Give a 1-sentence mock analysis of the Indian stock market today."
                 }
             ],
-            model="llama3-8b-8192",
+            model="llama-3.1-8b-instant",
         )
         return chat_completion.choices[0].message.content
     except Exception as e:
