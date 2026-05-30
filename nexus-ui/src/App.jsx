@@ -23,11 +23,11 @@ const mockOrderHistory = [
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  
+
   // --- THE BRIDGE: Backend Connection State ---
   const [isEngineLive, setIsEngineLive] = useState(false);
   const [netPnl, setNetPnl] = useState(0.00);
-  
+
   // NEW: State array to hold the live AI logs
   const [systemLogs, setSystemLogs] = useState([
     { time: new Date().toLocaleTimeString(), text: "[SYSTEM] Nexus Quantitative Terminal booting...", type: "system" },
@@ -37,12 +37,16 @@ export default function App() {
   useEffect(() => {
     const fetchLiveData = async () => {
       try {
-        const response = await fetch('https://nexus-ai-trading-agent.onrender.com/api/data');
+        const response = await fetch('https://nexus-ai-trading-agent.onrender.com/agent/decide', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ capital: 500.0 })
+        });
         if (response.ok) {
           const data = await response.json();
           setIsEngineLive(true);
           setNetPnl(data.net_pnl);
-          
+
           // NEW: Push the live AI thought into the terminal
           if (data.latest_log) {
             setSystemLogs(prevLogs => {
@@ -50,10 +54,10 @@ export default function App() {
               if (prevLogs.length > 0 && prevLogs[prevLogs.length - 1].text === data.latest_log) {
                 return prevLogs;
               }
-              const newLog = { 
-                time: new Date().toLocaleTimeString(), 
-                text: data.latest_log, 
-                type: "ai" 
+              const newLog = {
+                time: new Date().toLocaleTimeString(),
+                text: data.latest_log,
+                type: "ai"
               };
               // Keep only the last 20 logs so the terminal doesn't overflow memory
               return [...prevLogs, newLog].slice(-20);
@@ -200,10 +204,10 @@ export default function App() {
       <div style={{ fontSize: '14px', lineHeight: '1.8', color: '#cbd5e1', fontFamily: 'monospace' }}>
         {/* Syncing the big diagnostics screen to our live logs too */}
         {systemLogs.map((log, index) => (
-            <p key={index}>
-              <span style={{ color: '#64748b' }}>[{log.time}]</span>{' '}
-              <span style={{ color: getLogColor(log.type) }}>{log.text}</span>
-            </p>
+          <p key={index}>
+            <span style={{ color: '#64748b' }}>[{log.time}]</span>{' '}
+            <span style={{ color: getLogColor(log.type) }}>{log.text}</span>
+          </p>
         ))}
         <div className="animate-pulse mt-4 text-slate-500">_ awaiting neural input...</div>
       </div>
@@ -216,7 +220,7 @@ export default function App() {
         <Settings color="#94a3b8" />
         <h2 style={{ margin: 0, color: '#f8fafc', fontSize: '18px' }}>ENGINE CONFIGURATION</h2>
       </div>
-      
+
       <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label style={{ color: '#94a3b8', fontSize: '12px' }}>API STATUS</label>
@@ -239,7 +243,7 @@ export default function App() {
             </div>
           </div>
         </div>
-        
+
         <button style={{ marginTop: '20px', padding: '12px', backgroundColor: '#38bdf8', color: '#0f172a', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
           <ShieldAlert size={16} />
           UPDATE PARAMETERS
@@ -251,7 +255,7 @@ export default function App() {
   // --- MAIN RENDER ---
   return (
     <div style={{ backgroundColor: '#0f172a', color: '#e2e8f0', height: '100vh', display: 'flex', fontFamily: 'monospace', overflow: 'hidden' }}>
-      
+
       {/* SIDEBAR NAVIGATION */}
       <div style={{ width: '80px', backgroundColor: '#1e293b', borderRight: '1px solid #334155', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0', gap: '30px', zIndex: 10 }}>
         <BrainCircuit color="#38bdf8" size={32} />
@@ -265,7 +269,7 @@ export default function App() {
 
       {/* MAIN WORKSPACE */}
       <div style={{ flex: 1, padding: '20px', display: 'flex', flexDirection: 'column', gap: '20px', overflowY: 'auto' }}>
-        
+
         {/* TOP BAR */}
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #334155', paddingBottom: '15px' }}>
           <h1 style={{ margin: 0, fontSize: '22px', color: '#f8fafc', letterSpacing: '1px' }}>
@@ -275,17 +279,17 @@ export default function App() {
             <div style={{ textAlign: 'right' }}>
               <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>NET PNL</p>
               <p style={{ margin: 0, fontSize: '18px', color: '#4ade80', fontWeight: 'bold' }}>
-              ₹{netPnl.toFixed(2)}
+                ₹{netPnl.toFixed(2)}
               </p>
             </div>
-            
-            <span style={{ 
-              backgroundColor: isEngineLive ? 'rgba(74, 222, 128, 0.15)' : 'rgba(239, 68, 68, 0.15)', 
-              color: isEngineLive ? '#4ade80' : '#ef4444', 
-              border: `1px solid ${isEngineLive ? '#22c55e' : '#ef4444'}`, 
-              padding: '6px 12px', 
-              borderRadius: '4px', 
-              fontSize: '13px', 
+
+            <span style={{
+              backgroundColor: isEngineLive ? 'rgba(74, 222, 128, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+              color: isEngineLive ? '#4ade80' : '#ef4444',
+              border: `1px solid ${isEngineLive ? '#22c55e' : '#ef4444'}`,
+              padding: '6px 12px',
+              borderRadius: '4px',
+              fontSize: '13px',
               fontWeight: 'bold',
               transition: 'all 0.3s ease'
             }}>
@@ -302,7 +306,7 @@ export default function App() {
           {activeTab === 'logs' && renderLogs()}
           {activeTab === 'settings' && renderSettings()}
         </div>
-        
+
       </div>
     </div>
   );
