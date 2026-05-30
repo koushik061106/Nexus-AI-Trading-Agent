@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from datetime import datetime
 # Initialize the API
 app = FastAPI()
 
@@ -12,7 +12,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+@app.get("/health")
+async def health():
+    return {
+        "status": "alive", 
+        "timestamp": datetime.now().isoformat()
+    }
 # This is the "Endpoint". React will visit localhost:8000/api/data to get this!
 @app.get("/api/data")
 def get_dashboard_data():
