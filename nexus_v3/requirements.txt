@@ -49,3 +49,4 @@ groq
 google-generativeai
 python-dotenv
 langgraph
+websockets==13.1
