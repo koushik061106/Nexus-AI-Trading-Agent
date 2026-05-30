@@ -12,6 +12,9 @@ ta>=0.11.0
 yfinance>=0.2.0
 mplfinance
 
+
+
+
 # News
 feedparser>=6.0.0
 newsapi-python>=0.2.7
@@ -43,3 +46,6 @@ flask-cors==4.0.0
 neo-api-client
 pyotp
 groq
+google-generativeai
+python-dotenv
+langgraph
